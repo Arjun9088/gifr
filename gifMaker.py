@@ -1,7 +1,7 @@
 import os
 import re
 from typing import Any
-from flask import Flask, app, request
+from flask import Flask, app, request, after_this_request
 from flask import json
 from flask.helpers import send_file, send_from_directory
 from flask.json import jsonify
@@ -14,7 +14,6 @@ app = Flask(__name__)
 
 @app.route("/getGif", methods=["POST"])
 def getVideoDetails():
-
     if request.method == "POST":
         requestData = request.get_json()
         videoUrl = requestData["url"]
@@ -34,6 +33,14 @@ def getVideoDetails():
                 return jsonify("Failure"), 400
         else:
             return jsonify("Invalid URL")
+        
+# @app.teardown_request
+# def removeFiles(response):
+#     print("Callback executed")
+#     for files in os.listdir(os.getcwd()):
+#         if files.endswith('.mp4') or files.endswith('.gif'):
+#             os.remove(files)
+        
 
 
 @app.route("/getInfo", methods=["POST"])
@@ -48,6 +55,7 @@ def getDetails():
             return jsonify(yt.title), 200
         else:
             return jsonify("Invalid Video"), 400
+    
 
 
 def downloadVideo(videoUrl: str, fileName: str) -> str:
